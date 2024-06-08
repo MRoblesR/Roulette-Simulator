@@ -27,21 +27,21 @@ pub mod RNG{
 pub mod roulette_simulator{
 
     use crate::RNG::DefaultRandomNumberGenerator;
+
     use super::RNG::RandomNumberGenerator;
-    pub struct Roulette {
-        rng: DefaultRandomNumberGenerator,
+    pub struct Roulette<R> {
+        rng: R,
         pending_bets: Vec<BetInformation>
     }
     
-    impl Roulette{
-        
-        pub fn from_entropy()-> Roulette{
-            Roulette{
-                rng:DefaultRandomNumberGenerator::default(),
-                pending_bets: Vec::new()
-            }
+    impl Default for Roulette<DefaultRandomNumberGenerator> {
+        fn default() -> Self {
+            Self::from_rng(DefaultRandomNumberGenerator::default())
         }
-        pub fn from_rng(rng: &'a mut dyn RandomNumberGenerator)-> Roulette{
+    }
+
+    impl <R:RandomNumberGenerator>Roulette<R>{
+        pub fn from_rng(rng: R)-> Roulette<R>{
             Roulette{
                 rng,
                 pending_bets: Vec::new()
@@ -58,6 +58,7 @@ pub mod roulette_simulator{
             }
             return (total_win,spin_information);
         }
+        
         fn check_winnings_of_bet(spin_information: &SpinInformation, bet_information: BetInformation) -> usize{
             //Num
             match bet_information.number{
@@ -681,7 +682,7 @@ pub mod roulette_simulator{
             //Define a roulette for testing
             //We pass a custom RNG for testing, if no RNG is provided it falls back to rand
             let mut test_rng = TestRandomNumberGenerator::default();
-            let mut roulette_sim = Roulette::from_rng(&mut test_rng);
+            let mut roulette_sim = Roulette::from_rng(test_rng);
             roulette_sim.bet_one_number(1,Nums::Only1);
             let (returned_earnings,spin_information) = roulette_sim.simulate();
 
@@ -698,7 +699,7 @@ pub mod roulette_simulator{
             //Define a roulette for testing
             //We pass a custom RNG for testing, if no RNG is provided it falls back to rand
             let mut test_rng = TestRandomNumberGenerator::default();
-            let mut roulette_sim = Roulette::from_rng(&mut test_rng);
+            let mut roulette_sim = Roulette::from_rng(test_rng);
             roulette_sim.bet_two_numbers(1,Splits::Split1_2);
             let (returned_earnings,spin_information) = roulette_sim.simulate();
 
@@ -715,7 +716,7 @@ pub mod roulette_simulator{
             //Define a roulette for testing
             //We pass a custom RNG for testing, if no RNG is provided it falls back to rand
             let mut test_rng = TestRandomNumberGenerator::default();
-            let mut roulette_sim = Roulette::from_rng(&mut test_rng);
+            let mut roulette_sim = Roulette::from_rng(test_rng);
             roulette_sim.bet_three_numbers(1,Streets::Street1_2_3);
             let (returned_earnings,spin_information) = roulette_sim.simulate();
 
@@ -733,7 +734,7 @@ pub mod roulette_simulator{
             //Define a roulette for testing
             //We pass a custom RNG for testing, if no RNG is provided it falls back to rand
             let mut test_rng = TestRandomNumberGenerator::default();
-            let mut roulette_sim = Roulette::from_rng(&mut test_rng);
+            let mut roulette_sim = Roulette::from_rng(test_rng);
             roulette_sim.bet_four_numbers(1,Corners::Corner1_2_4_5);
             let (returned_earnings,spin_information) = roulette_sim.simulate();
 
@@ -752,7 +753,7 @@ pub mod roulette_simulator{
             //Define a roulette for testing
             //We pass a custom RNG for testing, if no RNG is provided it falls back to rand
             let mut test_rng = TestRandomNumberGenerator::default();
-            let mut roulette_sim = Roulette::from_rng(&mut test_rng);
+            let mut roulette_sim = Roulette::from_rng(test_rng);
             roulette_sim.bet_six_numbers(1,Lines::Line1_6);
             let (returned_earnings,spin_information) = roulette_sim.simulate();
 
@@ -771,7 +772,7 @@ pub mod roulette_simulator{
             //Define a roulette for testing
             //We pass a custom RNG for testing, if no RNG is provided it falls back to rand
             let mut test_rng = TestRandomNumberGenerator::default();
-            let mut roulette_sim = Roulette::from_rng(&mut test_rng);
+            let mut roulette_sim = Roulette::from_rng(test_rng);
             roulette_sim.bet_twelve_numbers(1,Dozens::First);
             let (returned_earnings,spin_information) = roulette_sim.simulate();
 
@@ -789,7 +790,7 @@ pub mod roulette_simulator{
             //Define a roulette for testing
             //We pass a custom RNG for testing, if no RNG is provided it falls back to rand
             let mut test_rng = TestRandomNumberGenerator::default();
-            let mut roulette_sim = Roulette::from_rng(&mut test_rng);
+            let mut roulette_sim = Roulette::from_rng(test_rng);
             roulette_sim.bet_column(1,Columns::First);
             let (returned_earnings,spin_information) = roulette_sim.simulate();
 
@@ -807,7 +808,7 @@ pub mod roulette_simulator{
             //Define a roulette for testing
             //We pass a custom RNG for testing, if no RNG is provided it falls back to rand
             let mut test_rng = TestRandomNumberGenerator::default();
-            let mut roulette_sim = Roulette::from_rng(&mut test_rng);
+            let mut roulette_sim = Roulette::from_rng(test_rng);
             roulette_sim.bet_half_numbers(1,HalfNumbers::From1To18);
             let (returned_earnings,spin_information) = roulette_sim.simulate();
 
@@ -825,7 +826,7 @@ pub mod roulette_simulator{
             //Define a roulette for testing
             //We pass a custom RNG for testing, if no RNG is provided it falls back to rand
             let mut test_rng = TestRandomNumberGenerator::default();
-            let mut roulette_sim = Roulette::from_rng(&mut test_rng);
+            let mut roulette_sim = Roulette::from_rng(test_rng);
             roulette_sim.bet_color(1,Colors::Red);
             let (returned_earnings,spin_information) = roulette_sim.simulate();
 
@@ -842,7 +843,7 @@ pub mod roulette_simulator{
             //Define a roulette for testing
             //We pass a custom RNG for testing, if no RNG is provided it falls back to rand
             let mut test_rng = TestRandomNumberGenerator::default();
-            let mut roulette_sim = Roulette::from_rng(&mut test_rng);
+            let mut roulette_sim = Roulette::from_rng(test_rng);
             roulette_sim.bet_parity(1,Parity::Odd);
             let (returned_earnings,spin_information) = roulette_sim.simulate();
 
